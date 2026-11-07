@@ -1,0 +1,12 @@
+{
+  "name": "file-flier-showcase",
+  "private": true,
+  "description": "Animated README clips: HTML scenes of File Flier recorded frame by frame",
+  "type": "module",
+  "scripts": {
+    "record": "node record.mjs"
+  },
+  "dependencies": {
+    "puppeteer-core": "24.10.0"
+  }
+}
