@@ -5,107 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>File Flier Storyboard</title>
 <style>
-  /* GNOME Dark, as File Flier draws it (src/theme.rs), with the purple accent. */
-  :root {
-    --bg: #1d1d20; --side: #2e2e32; --input: #38383c; --border: #3d3d41;
-    --text: #ffffff; --dim: #9a9a9e; --faint: #6c6c70; --accent: #8957e5;
-    --row-sep: #26262a; --hover: #2a2a2e; --star: #f5b72e;
-    --font: "Adwaita Sans", "Cantarell", "Ubuntu Sans", "Ubuntu", system-ui, sans-serif;
-  }
+  :root { --accent: #8957e5; --dim: #9a9a9e; --faint: #6c6c71; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #111113; color: var(--text); font: 14px/1.4 var(--font); }
+  body { margin: 0; background: #111113; color: #fff; font: 14px/1.4 "Ubuntu Sans", system-ui, sans-serif; }
   .page { max-width: 1340px; margin: 0 auto; padding: 24px 16px 60px; }
   h1 { font-size: 22px; margin: 0 0 4px; }
   .lede { color: var(--dim); margin: 0 0 18px; }
-
-  /* The stage is exactly what gets recorded: 1280×720. */
-  .stage-wrap { overflow: auto; }
-  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden;
-    background: radial-gradient(circle at 30% 20%, #3b2d63 0%, #17151f 55%, #0d0d10 100%); }
-  .win { position: absolute; left: 40px; top: 30px; width: 1200px; height: 660px; background: var(--bg);
-    border: 1px solid #000; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.55); }
-  .titlebar { position: absolute; left: 0; right: 0; top: 0; height: 40px; background: var(--side);
-    display: flex; align-items: center; border-bottom: 1px solid var(--border); }
-  .titlebar .sb-head { width: 200px; padding-left: 14px; color: var(--dim); font-size: 13px; }
-  .tab { height: 30px; padding: 0 14px; margin-right: 4px; border-radius: 8px; display: flex; align-items: center;
-    gap: 8px; color: var(--dim); font-size: 13px; }
-  .tab.on { background: var(--bg); color: var(--text); }
-  .tab .ico { width: 14px; height: 11px; border-radius: 2px; background: var(--accent); }
-  .wbtns { margin-left: auto; display: flex; gap: 10px; padding-right: 12px; }
-  .wbtns i { width: 22px; height: 22px; border-radius: 50%; background: #3a3a3f; display: block; }
-
-  .sidebar { position: absolute; left: 0; top: 40px; bottom: 0; width: 200px; background: var(--side);
-    padding: 10px 8px; border-right: 1px solid var(--border); }
-  .sfilter { height: 28px; border-radius: 6px; background: var(--input); color: var(--faint); font-size: 12.5px;
-    padding: 5px 10px; margin-bottom: 12px; }
-  .sgroup { color: var(--dim); font-size: 11.5px; font-weight: 600; margin: 10px 8px 4px; }
-  .sitem { height: 30px; padding: 0 10px; border-radius: 6px; display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
-  .sitem.on { background: rgba(255,255,255,.08); }
-  .sitem b { width: 15px; height: 12px; border-radius: 2px; background: #bfbfc4; opacity: .85; display: block; }
-
-  .main { position: absolute; left: 200px; top: 40px; bottom: 0; right: 300px; }
-  .toolbar { height: 42px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid var(--row-sep); }
-  .nav { width: 26px; height: 26px; border-radius: 6px; color: var(--dim); display: grid; place-items: center; font-size: 15px; }
-  .crumbs { color: var(--dim); font-size: 13.5px; } .crumbs b { color: var(--text); font-weight: 500; }
-  .filter { margin-left: auto; width: 200px; height: 28px; border-radius: 6px; background: var(--input);
-    color: var(--faint); font-size: 12.5px; padding: 5px 10px; }
-  .cols { display: flex; height: 30px; align-items: center; padding: 0 14px; color: var(--dim); font-size: 12px;
-    border-bottom: 1px solid var(--row-sep); }
-  .c-name { flex: 1; } .c-size { width: 90px; text-align: right; } .c-kind { width: 130px; padding-left: 24px; } .c-mod { width: 150px; }
-  .row { display: flex; height: 32px; align-items: center; padding: 0 14px; font-size: 13.5px; margin: 0 6px; border-radius: 6px; }
-  .row .c-size, .row .c-kind, .row .c-mod { color: var(--dim); font-size: 12.5px; }
-  .row.sel { background: var(--accent); } .row.sel span { color: #fff !important; }
-  .row.hov { background: var(--hover); }
-  .ic { display: inline-block; width: 18px; height: 14px; border-radius: 3px; margin-right: 10px; vertical-align: -2px; }
-  .ic.dir { background: var(--accent); } .ic.vid { background: #e66100; } .ic.img { background: #2ec27e; }
-  .ic.doc { background: #c0bfbc; width: 14px; height: 17px; } .ic.aud { background: #f6d32d; }
-  .bottombar { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; border-top: 1px solid var(--row-sep);
-    display: flex; align-items: center; padding: 0 14px; color: var(--dim); font-size: 12.5px; }
-
-  .insp { position: absolute; top: 40px; right: 0; bottom: 0; width: 300px; background: var(--side); border-left: 1px solid var(--border); }
-  .insp-head { height: 42px; display: flex; align-items: center; padding: 0 16px; color: var(--dim); font-size: 13px; font-weight: 600;
-    border-bottom: 1px solid var(--row-sep); }
-  .insp-prev { height: 200px; background: var(--bg); display: grid; place-items: center; border-bottom: 1px solid var(--row-sep); }
-  .insp-prev canvas { width: 268px; height: 151px; border-radius: 4px; }
-  .insp-name { text-align: center; font-weight: 700; font-size: 16px; margin: 14px 12px 2px; }
-  .insp-sub { text-align: center; color: var(--dim); font-size: 12.5px; }
-  .stars { text-align: center; color: var(--faint); font-size: 17px; letter-spacing: 2px; margin: 8px 0; }
-  .info { margin: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
-  .info div { display: flex; justify-content: space-between; padding: 7px 12px; font-size: 12.5px; border-top: 1px solid var(--row-sep); }
-  .info div:first-child { border-top: 0; } .info span:first-child { color: var(--dim); }
-
-  /* Quick Look */
-  #ql-dim { position: absolute; inset: 0; background: #000; opacity: 0; }
-  #ql { position: absolute; left: 210px; top: 80px; width: 860px; height: 560px; background: #2b2b2f; border: 1px solid var(--border);
-    border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,.6); opacity: 0; overflow: hidden; }
-  .ql-head { height: 64px; padding: 12px 22px; border-bottom: 1px solid var(--row-sep); }
-  .ql-head .n { font-size: 17px; font-weight: 700; } .ql-head .m { color: var(--dim); font-size: 12.5px; margin-top: 2px; }
-  .ql-open { position: absolute; right: 60px; top: 17px; background: var(--accent); border-radius: 6px; padding: 5px 20px; font-size: 13.5px; }
-  #ql canvas { position: absolute; left: 16px; top: 76px; width: 826px; height: 390px; border-radius: 8px; background: #000; }
-  .ql-bar { position: absolute; left: 16px; right: 16px; top: 476px; height: 36px; display: flex; align-items: center; gap: 12px; }
-  #ql-play { width: 28px; text-align: center; font-size: 16px; }
-  #ql-time { color: var(--dim); font-size: 12.5px; width: 92px; }
-  .seek { flex: 1; height: 5px; background: #45454b; border-radius: 3px; position: relative; }
-  #ql-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 3px; }
-  .ql-foot { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; border-top: 1px solid var(--row-sep); color: var(--dim);
-    font-size: 12px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; }
-
-  /* The pointer and key presses */
-  #cursor { position: absolute; left: 0; top: 0; width: 24px; height: 24px; pointer-events: none; z-index: 10;
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
-  #ripple { position: absolute; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.9); opacity: 0; z-index: 9; }
-  #key { position: absolute; left: 50%; bottom: 46px; transform: translateX(-50%); background: rgba(20,20,24,.92);
-    border: 1px solid #55555c; border-radius: 10px; padding: 8px 18px; font-size: 18px; font-weight: 600; opacity: 0;
-    box-shadow: 0 6px 20px rgba(0,0,0,.5); z-index: 11; white-space: nowrap; }
-  #key small { color: var(--dim); font-weight: 400; font-size: 14px; margin-left: 8px; }
-  #caption { position: absolute; left: 40px; top: 0; height: 30px; line-height: 30px; color: #d9d3ee; font-size: 14px; font-weight: 600; }
-
-  /* Storyboard below the stage */
-  .controls { display: flex; gap: 12px; align-items: center; margin: 12px 0 28px; }
-  .controls button { background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 6px 14px; font: inherit; cursor: pointer; }
-  .controls input { flex: 1; max-width: 1100px; accent-color: var(--accent); }
-  #tlabel { width: 60px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  iframe { width: 1300px; max-width: 100%; height: 860px; border: 0; display: block; margin-bottom: 26px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
   .card { background: #1c1c20; border: 1px solid #2c2c31; border-radius: 10px; padding: 14px 16px; }
   .card h3 { margin: 0 0 2px; font-size: 15px; } .card .file { color: var(--faint); font-size: 12px; margin-bottom: 8px; }
@@ -118,171 +24,12 @@
 <body>
 <div class="page">
   <h1>File Flier: showcase storyboard</h1>
-  <p class="lede">Ten 5-second clips for the README. The stage below is the 1280×720 frame the recorder captures. Scene 4 (Quick Look) is fully animated as the pilot; the cards list each scene's beats.</p>
-
-  <div class="stage-wrap"><div id="stage">
-    <div id="caption">Quick Look plays videos: K pause, J / L skip, E / F step frames</div>
-    <div class="win">
-      <div class="titlebar">
-        <div class="sb-head">Files</div>
-        <div class="tab on"><span class="ico"></span>Videos</div>
-        <div class="tab"><span class="ico"></span>Pictures</div>
-        <div class="tab"><span class="ico"></span>Downloads</div>
-        <div class="wbtns"><i></i><i></i><i></i></div>
-      </div>
-      <div class="sidebar">
-        <div class="sfilter">Filter…</div>
-        <div class="sgroup">Places</div>
-        <div class="sitem"><b></b>Home</div><div class="sitem"><b></b>Desktop</div><div class="sitem"><b></b>Documents</div>
-        <div class="sitem"><b></b>Downloads</div><div class="sitem"><b></b>Music</div><div class="sitem"><b></b>Pictures</div>
-        <div class="sitem on"><b></b>Videos</div>
-        <div class="sgroup">Tags</div>
-        <div class="sitem"><b style="background:#e01b24;border-radius:50%;width:10px;height:10px"></b>Favourites</div>
-        <div class="sitem"><b style="background:#2ec27e;border-radius:50%;width:10px;height:10px"></b>Client work</div>
-      </div>
-      <div class="main">
-        <div class="toolbar"><span class="nav">‹</span><span class="nav">›</span><span class="nav">↑</span>
-          <span class="crumbs">Home › <b>Videos</b></span><span class="filter">Filter…</span></div>
-        <div class="cols"><span class="c-name">Name</span><span class="c-size">Size</span><span class="c-kind">Kind</span><span class="c-mod">Modified</span></div>
-        <div id="rows"></div>
-        <div class="bottombar"><span id="status">9 items</span></div>
-      </div>
-      <div class="insp">
-        <div class="insp-head" id="insp-kind">Folder</div>
-        <div class="insp-prev"><canvas id="insp-cv" width="536" height="302"></canvas></div>
-        <div class="insp-name" id="insp-name">Videos</div>
-        <div class="insp-sub" id="insp-sub">9 items</div>
-        <div class="stars">★★★★★</div>
-        <div class="info" id="insp-info"></div>
-      </div>
-    </div>
-    <div id="ql-dim"></div>
-    <div id="ql">
-      <div class="ql-head"><div class="n">Lisbon sunset.mp4</div><div class="m">MPEG-4 video · 48.2 MB · 1920 × 1080 · 0:12</div></div>
-      <div class="ql-open">Open</div>
-      <canvas id="ql-cv" width="1652" height="780"></canvas>
-      <div class="ql-bar"><span id="ql-play">❚❚</span><span id="ql-time">0:00 / 0:12</span><div class="seek"><div id="ql-fill"></div></div><span style="color:var(--dim)">🔊</span></div>
-      <div class="ql-foot"><span>4 of 9</span><span>K play/pause · J L −5 s / +5 s · E F next / previous frame · Space close</span></div>
-    </div>
-    <div id="ripple"></div>
-    <svg id="cursor" viewBox="0 0 24 24"><path d="M3 2 L3 19 L7.5 15 L10.5 22 L13.5 20.7 L10.6 14 L17 14 Z" fill="#fff" stroke="#000" stroke-width="1.3" stroke-linejoin="round"/></svg>
-    <div id="key"></div>
-  </div></div>
-
-  <div class="controls">
-    <button id="playbtn">Pause</button>
-    <input id="scrub" type="range" min="0" max="5" step="0.01" value="0">
-    <span id="tlabel">0.00 s</span>
-  </div>
-
+  <p class="lede">Ten 5-second clips for the README. Above: the Quick Look pilot as the recorder captures it (1280 × 800; open
+    <code>scene.html?s=04-quick-look</code> to scrub). Below: each scene's beats.</p>
+  <iframe src="scene.html?s=04-quick-look" title="Quick Look scene"></iframe>
   <div class="grid" id="cards"></div>
 </div>
-
 <script>
-// ---------- Data ----------
-const FILES = [
-  ["dir", "Drone footage", "—", "Folder", "Yesterday"],
-  ["dir", "Wedding — edit", "—", "Folder", "This week"],
-  ["vid", "Harbour timelapse.mov", "312 MB", "QuickTime video", "Today 09:12"],
-  ["vid", "Lisbon sunset.mp4", "48.2 MB", "MPEG-4 video", "Today 08:40"],
-  ["vid", "Night tram.mkv", "121 MB", "Matroska video", "2 Nov 2026"],
-  ["img", "Poster frame.png", "2.1 MB", "PNG image", "1 Nov 2026"],
-  ["aud", "Score — draft 3.flac", "38 MB", "FLAC audio", "28 Oct 2026"],
-  ["doc", "Shot list.md", "4.2 kB", "Markdown", "27 Oct 2026"],
-  ["doc", "Edit decisions.csv", "12 kB", "CSV document", "27 Oct 2026"],
-];
-const ROW_Y0 = 30 + 42 + 30 + 40; // stage y of the first row's top (win top + titlebar + toolbar + header)
-const rowsEl = document.getElementById("rows");
-rowsEl.innerHTML = FILES.map((f, i) =>
-  `<div class="row" id="r${i}"><span class="c-name"><i class="ic ${f[0]}"></i>${f[1]}</span><span class="c-size">${f[2]}</span><span class="c-kind">${f[3]}</span><span class="c-mod">${f[4]}</span></div>`).join("");
-
-// ---------- Helpers ----------
-const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const ease = x => { x = clamp(x, 0, 1); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
-const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
-const lerp = (a, b, k) => a + (b - a) * k;
-/** Pointer path: list of [time, x, y]; eased between points. */
-function pointerAt(t, path) {
-  for (let i = 0; i < path.length - 1; i++) {
-    const [t0, x0, y0] = path[i], [t1, x1, y1] = path[i + 1];
-    if (t <= t1) { const k = ease(seg(t, t0, t1)); return [lerp(x0, x1, k), lerp(y0, y1, k)]; }
-  }
-  const l = path[path.length - 1]; return [l[1], l[2]];
-}
-/** A key badge shown from `at` for `len` seconds; returns [label, opacity]. */
-function keyAt(t, keys) {
-  for (const [at, label, len] of keys) {
-    if (t >= at - .08 && t <= at + len) {
-      const o = Math.min(seg(t, at - .08, at + .05), 1 - seg(t, at + len - .15, at + len));
-      return [label, o];
-    }
-  }
-  return ["", 0];
-}
-function fmt(s) { s = Math.max(0, s); return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`; }
-
-/** A stand-in video: a sun setting over the sea, as a function of video time. */
-function drawVideo(cv, vt) {
-  const c = cv.getContext("2d"), w = cv.width, h = cv.height, k = clamp(vt / 12, 0, 1);
-  const sky = c.createLinearGradient(0, 0, 0, h * .62);
-  sky.addColorStop(0, `hsl(${lerp(215, 260, k)} 55% ${lerp(38, 18, k)}%)`);
-  sky.addColorStop(1, `hsl(${lerp(28, 8, k)} 90% ${lerp(62, 42, k)}%)`);
-  c.fillStyle = sky; c.fillRect(0, 0, w, h);
-  const sy = lerp(h * .28, h * .62, k);
-  c.fillStyle = `hsl(${lerp(42, 14, k)} 100% 62%)`; c.beginPath(); c.arc(w * .62, sy, h * .09, 0, 7); c.fill();
-  c.fillStyle = `hsl(220 45% ${lerp(22, 9, k)}%)`; c.fillRect(0, h * .62, w, h);
-  c.fillStyle = "rgba(255,190,120,.35)";
-  for (let i = 0; i < 9; i++) { const y = h * .65 + i * h * .035, ww = w * (.18 - i * .014); c.fillRect(w * .62 - ww / 2 + Math.sin(vt * 3 + i) * 6, y, ww, 3); }
-  c.fillStyle = "#0b0b12"; c.beginPath(); c.moveTo(0, h * .62);
-  for (let x = 0; x <= w; x += 20) c.lineTo(x, h * .62 - (x < w * .35 ? 40 + 30 * Math.sin(x / 70) : 0) * (h / 780));
-  c.lineTo(w * .35, h * .62); c.fill();
-  // a tram sliding along the shore
-  const tx = ((vt * 0.09) % 1.3 - .15) * w; c.fillStyle = "#f6d32d"; c.fillRect(tx, h * .585, w * .06, h * .03);
-}
-
-// ---------- Scene 4: Quick Look (the pilot) ----------
-const QL = {
-  dur: 5,
-  path: [[0, 1020, 640], [.75, 470, ROW_Y0 + 3 * 32 + 16], [1.2, 470, ROW_Y0 + 3 * 32 + 16], [1.9, 760, 560], [4.2, 760, 560], [5, 880, 600]],
-  clicks: [.8],
-  keys: [[1.1, "Space", .6], [2.55, "K", .5, "pause"], [3.15, "L", .5, "+5 s"], [3.75, "K", .5, "play"], [4.35, "Space", .55, "close"]],
-  render(t) {
-    const sel = t >= .8;
-    FILES.forEach((_, i) => {
-      const el = document.getElementById("r" + i);
-      el.className = "row" + (sel && i === 3 ? " sel" : (!sel && i === 3 && t > .55 ? " hov" : ""));
-    });
-    // inspector follows the selection
-    const f = sel ? FILES[3] : null;
-    document.getElementById("insp-kind").textContent = f ? "MPEG-4 video" : "Folder";
-    document.getElementById("insp-name").textContent = f ? f[1] : "Videos";
-    document.getElementById("insp-sub").textContent = f ? "48.2 MB" : "9 items";
-    document.getElementById("insp-info").innerHTML = (f
-      ? [["Dimensions", "1920 × 1080"], ["Duration", "0:12"], ["Video", "H.264 · 30 fps"], ["Audio", "AAC stereo"], ["Modified", "Today 08:40"]]
-      : [["Contains", "9 items"], ["Size", "520 MB"], ["Modified", "Today 09:12"]])
-      .map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("");
-    const icv = document.getElementById("insp-cv");
-    if (f) drawVideo(icv, 2); else { const c = icv.getContext("2d"); c.fillStyle = "#1d1d20"; c.fillRect(0, 0, icv.width, icv.height);
-      c.fillStyle = "#8957e5"; c.beginPath(); c.roundRect(178, 70, 180, 140, 14); c.fill(); }
-
-    // Quick Look opens at 1.2 s, closes at 4.4 s
-    const open = ease(seg(t, 1.2, 1.45)) * (1 - ease(seg(t, 4.4, 4.62)));
-    document.getElementById("ql-dim").style.opacity = .47 * open;
-    const ql = document.getElementById("ql");
-    ql.style.opacity = open; ql.style.transform = `scale(${.94 + .06 * open})`;
-    // video time: plays from 2 s; K pauses at 2.55, L jumps 5 s at 3.15, K plays at 3.75
-    let vt = 2 + clamp(t - 1.45, 0, 1.1);
-    if (t > 3.15) vt += 5;
-    if (t > 3.75) vt += t - 3.75;
-    const playing = t < 2.55 || t > 3.75;
-    drawVideo(document.getElementById("ql-cv"), vt);
-    document.getElementById("ql-play").textContent = playing ? "❚❚" : "▶";
-    document.getElementById("ql-time").textContent = `${fmt(vt)} / 0:12`;
-    document.getElementById("ql-fill").style.width = `${clamp(vt / 12, 0, 1) * 100}%`;
-  },
-};
-
-// ---------- The other nine scenes: beat sheets ----------
 const SCENES = [
   { n: 1, title: "Split tabs and tiling", file: "01-split-tabs.gif", beats: [["0.0", "One pane, Videos tab"], ["0.6", "Drag the Pictures tab to the right edge, drop zone glows"], ["1.6", "Panes split side by side"], ["2.4", "Drag Downloads tab to the bottom of the right pane"], ["3.4", "Three panes tiled"], ["4.2", "Click into each pane, active outline moves"]] },
   { n: 2, title: "Type to filter, command palette", file: "02-filter-palette.gif", beats: [["0.0", "Type “sun”, the list narrows instantly"], ["1.4", "Esc clears"], ["1.9", "Ctrl+Shift+P opens the palette"], ["2.4", "Type “grid”, fuzzy matches with shortcuts"], ["3.6", "Enter, the view switches to Large grid"]] },
@@ -298,38 +45,6 @@ const SCENES = [
 document.getElementById("cards").innerHTML = SCENES.map(s => `<div class="card${s.live ? " live" : ""}">
   <h3>${s.n}. ${s.title}${s.live ? '<span class="tag">pilot, animated above</span>' : ""}</h3><div class="file">docs/media/${s.file} · 5 s</div>
   <ol>${s.beats.map(([t, b]) => `<li><b>${t}</b>${b}</li>`).join("")}</ol></div>`).join("");
-
-// ---------- Engine: seek(t) draws one frame, the same every time ----------
-const cursor = document.getElementById("cursor"), ripple = document.getElementById("ripple"), keyEl = document.getElementById("key");
-window.seek = function (t) {
-  const s = QL;
-  s.render(t);
-  const [x, y] = pointerAt(t, s.path);
-  cursor.style.transform = `translate(${x - 3}px, ${y - 2}px)`;
-  let r = 0, rk = 0;
-  for (const c of s.clicks) if (t >= c && t < c + .45) { rk = seg(t, c, c + .45); r = 1; }
-  ripple.style.left = x + "px"; ripple.style.top = y + "px";
-  ripple.style.opacity = r ? 1 - rk : 0; ripple.style.transform = `scale(${.4 + rk})`;
-  const [label, o] = keyAt(t, s.keys);
-  const k = s.keys.find(k => k[1] === label && t >= k[0] - .08 && t <= k[0] + k[2]);
-  keyEl.innerHTML = label ? `${label}${k && k[3] ? `<small>${k[3]}</small>` : ""}` : "";
-  keyEl.style.opacity = o;
-};
-window.DURATION = QL.dur;
-
-// Preview player (the recorder drives seek() itself and adds ?record).
-if (!location.search.includes("record")) {
-  const scrub = document.getElementById("scrub"), lab = document.getElementById("tlabel"), btn = document.getElementById("playbtn");
-  let playing = true, t0 = performance.now(), t = 0;
-  btn.onclick = () => { playing = !playing; btn.textContent = playing ? "Pause" : "Play"; t0 = performance.now() - t * 1000; };
-  scrub.oninput = () => { t = +scrub.value; t0 = performance.now() - t * 1000; seek(t); lab.textContent = t.toFixed(2) + " s"; };
-  (function loop(now) {
-    if (playing) { t = ((now - t0) / 1000) % QL.dur; scrub.value = t; lab.textContent = t.toFixed(2) + " s"; seek(t); }
-    requestAnimationFrame(loop);
-  })(performance.now());
-} else {
-  seek(0);
-}
 </script>
 </body>
 </html>

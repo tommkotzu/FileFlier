@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File Flier Scene</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  body { margin: 0; background: #0c0c0f; }
+  .bar { display: flex; gap: 10px; align-items: center; padding: 8px 10px; font: 13px system-ui, sans-serif; color: #aaa; width: 1280px; }
+  .bar button { background: #8957e5; color: #fff; border: 0; border-radius: 6px; padding: 4px 12px; font: inherit; cursor: pointer; }
+  .bar input { flex: 1; accent-color: #8957e5; }
+  .bar span { width: 56px; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="bar" id="bar"><button id="pp">Pause</button><input id="scrub" type="range" min="0" step="0.01" value="0"><span id="lab">0.00 s</span></div>
+<script type="module">
+  // scene.html?s=04-quick-look plays a scene; ?s=…&record hands seek(t) to the recorder.
+  const params = new URLSearchParams(location.search);
+  const name = params.get("s") || "04-quick-look";
+  const scene = await import(`./scenes/${name}.js`);
+  const stage = document.getElementById("stage");
+  scene.setup(stage);
+  window.DURATION = scene.duration;
+  window.seek = (t) => scene.render(t);
+  await Promise.all([...document.images].map((i) => i.decode().catch(() => {})));
+  if (params.has("record")) {
+    document.getElementById("bar").remove();
+    seek(0);
+    window.READY = true;
+  } else {
+    const scrub = document.getElementById("scrub"), lab = document.getElementById("lab"), pp = document.getElementById("pp");
+    scrub.max = scene.duration;
+    let playing = true, t = 0, t0 = performance.now();
+    pp.onclick = () => { playing = !playing; pp.textContent = playing ? "Pause" : "Play"; t0 = performance.now() - t * 1000; };
+    scrub.oninput = () => { t = +scrub.value; t0 = performance.now() - t * 1000; seek(t); lab.textContent = `${t.toFixed(2)} s`; };
+    (function loop(now) {
+      if (playing) { t = ((now - t0) / 1000) % scene.duration; scrub.value = t; lab.textContent = `${t.toFixed(2)} s`; seek(t); }
+      requestAnimationFrame(loop);
+    })(performance.now());
+  }
+</script>
+</body>
+</html>

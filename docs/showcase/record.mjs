@@ -3,7 +3,7 @@
 //
 //   node record.mjs <url> <out-name> [fps]
 //
-// Writes <out-name>.mp4 (1280×720) and <out-name>.gif (800 px wide) to ../media.
+// Writes <out-name>.mp4 (1280×800) and <out-name>.gif (800 px wide) to ../media.
 // Needs Chromium (CHROMIUM=/path to override) and ffmpeg.
 import { mkdtempSync, rmSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -30,8 +30,9 @@ const browser = await puppeteer.launch({
 });
 try {
   const page = await browser.newPage();
-  await page.setViewport({ width: 1400, height: 900, deviceScaleFactor: 1 });
+  await page.setViewport({ width: 1300, height: 820, deviceScaleFactor: 1 });
   await page.goto(url + (url.includes("?") ? "&" : "?") + "record", { waitUntil: "networkidle0" });
+  await page.waitForFunction(() => window.READY === true);
   await page.evaluate(() => document.fonts.ready);
   const stage = await page.$("#stage");
   const dur = await page.evaluate(() => window.DURATION);
